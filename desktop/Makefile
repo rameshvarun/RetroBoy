@@ -1,6 +1,6 @@
-CC=gcc
-CFLAGS=-std=gnu99
-LIBS=
+CC=clang
+CFLAGS=-std=gnu99 $(shell pkg-config --cflags luajit sdl2) -I/usr/local/Cellar/physfs/2.0.3/include
+LFLAGS=$(shell pkg-config --libs luajit sdl2) -L/usr/local/Cellar/physfs/2.0.3/lib/ -lphysfs -pagezero_size 10000 -image_base 100000000
 
 .PHONY: default clean
 default: retroboy
@@ -8,7 +8,7 @@ default: retroboy
 OBJS=src/main.o
 
 retroboy: $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS)
 
 src/%.o: src/%.c
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -19,4 +19,4 @@ clean:
 	rm retroboy
 
 format:
-	clang-format -i src/*.c src/*.h
+	clang-format -i src/*.c

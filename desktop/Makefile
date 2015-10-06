@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-std=c++11 -Wall $(shell pkg-config --cflags luajit sdl2 jansson) -I/usr/local/Cellar/physfs/2.0.3/include
-LFLAGS=$(shell pkg-config --libs luajit sdl2 jansson) -L/usr/local/Cellar/physfs/2.0.3/lib/ -lphysfs -pagezero_size 10000 -image_base 100000000
+CFLAGS=-std=c++11 -Wall $(shell pkg-config --cflags luajit sdl2 jsoncpp) -I/usr/local/Cellar/physfs/2.0.3/include
+LFLAGS=$(shell pkg-config --libs luajit sdl2 jsoncpp) -L/usr/local/Cellar/physfs/2.0.3/lib/ -lphysfs -pagezero_size 10000 -image_base 100000000
 
 .PHONY: default clean
 default: retroboy

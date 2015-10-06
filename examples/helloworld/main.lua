@@ -4,5 +4,6 @@ end
 
 -- retroboy.draw is called every frame. After the call, the screen is updated with any changed pixels.
 function retroboy.draw()
-	retroboy.clear(0)
+	retroboy.display.clear(0)
+	retroboy.display.setPixel(0, 0, 1)
 end

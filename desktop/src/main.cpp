@@ -1,18 +1,12 @@
-#include <stdio.h>
-#include <stdbool.h>
-
-#include <sys/stat.h>
+#include <iostream>
+#include <vector>
 
 #include <SDL.h>
-
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-#include <luajit.h>
-
+#include <lua.hpp>
 #include <physfs.h>
-
 #include <jansson.h>
+
+using namespace std;
 
 #define PANIC(...)                                                                                 \
   {                                                                                                \
@@ -20,14 +14,15 @@
     exit(1);                                                                                       \
   }
 
-int main(int argc, char *argv[]) {
-  if (argc != 2)
+int vec_main(vector<string> argv) {
+  if (argv.size() != 2)
     PANIC("Missing an argument.\n");
 
   // Initialize filesystem.
   PHYSFS_init(NULL);
-  if (PHYSFS_mount(argv[1], NULL, 1) == 0) {
-    PANIC("Failed to mount '%s' as filesystem.\n", argv[1]);
+  if (PHYSFS_mount(argv[1].c_str(), NULL, 1) == 0) {
+    std::cerr << "Failed to mount '" << argv[1] << "' as filesystem." << std::endl;
+    exit(1);
   }
 
   // Parse configuration file.
@@ -95,4 +90,10 @@ int main(int argc, char *argv[]) {
   PHYSFS_deinit();
 
   return 0;
+}
+
+int main(int argc, char *argv[]) {
+  vector<string> args;
+  for (int i = 0; i < argc; ++i) args.push_back(string(argv[i]));
+  vec_main(args);
 }

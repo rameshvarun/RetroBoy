@@ -1,3 +1,3 @@
-# GameToy Web Player
+# RetroBoy Web Player
 
-To be implemented using moonshine.js
+An HTML5 implementation of the RetroBoy fantasy console. To be implemented using moonshine.js.

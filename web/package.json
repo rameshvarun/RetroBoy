@@ -1,0 +1,11 @@
+{
+  "name": "retroboy",
+  "description": "An HTML5 emulator for the RetroBoy fantasy console.",
+  "dependencies": {
+    "jszip": "^2.5.0",
+    "moonshine": "^0.2.1"
+  },
+  "devDependencies": {
+    "browserify": "^11.2.0"
+  }
+}

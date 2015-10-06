@@ -1,8 +1,8 @@
-function gametoy.load()
+-- retroboy.update is called every frame, with the time since the previous frame as an argument.
+function retroboy.update(dt)
 end
 
-function gametoy.update(dt)
-end
-
-function gametoy.draw()
+-- retroboy.draw is called every frame. After the call, the screen is updated with any changed pixels.
+function retroboy.draw()
+	retroboy.clear(0)
 end

@@ -1,1 +1,1 @@
-# GameToy iOS Player
+# RetroBoy iOS Player

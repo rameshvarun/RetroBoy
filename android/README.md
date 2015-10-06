@@ -1,3 +1,3 @@
-# GameToy Android Player
+# RetroBoy Android Player
 
-To be implemented usint LuaJ
+To be implemented using LuaJ.

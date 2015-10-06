@@ -1,3 +1,3 @@
-# GameToy Desktop Player
+# RetroBoy Desktop Player
 
-To be implemented in LOVE.
+To be implemented using LuaJIT, PhysicsFS, and SDL.

@@ -1,7 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head></head>
+<head>
+	<script type="text/javascript" src="lua.vm.js"></script>
+	<script type="text/javascript" src="bundle.js"></script>
 
-<body></body>
+	
+	<style>
+	html {
+		width: 100%;
+		height: 100%;
+	}
+	body {
+		background-color: #000000;
+		width: 100%;
+		height: 100%;
+		display: flex;
+  		align-items: center;
+  		justify-content: center;
+	}
+	#container {
+		color: #ffffff;
+	}
+	</style>
+</head>
+
+<body>
+	<div id="container">
+		<canvas id="display" width="320" height="288"></canvas>
+		<div>Powered by RetroBoy</div>
+	</div>
+
+	<script type="text/javascript">
+		retroboy.activate(document.getElementById("display"), "rom.retroboy");
+	</script>
+</body>
 
 </html>

@@ -3,9 +3,14 @@
   "description": "An HTML5 emulator for the RetroBoy fantasy console.",
   "dependencies": {
     "jszip": "^2.5.0",
-    "moonshine": "^0.2.1"
+    "jszip-utils": "0.0.2"
   },
   "devDependencies": {
-    "browserify": "^11.2.0"
+    "browserify": "^11.2.0",
+    "serve": "^1.4.0"
+  },
+  "scripts": {
+    "bundle": "browserify main.js -o bundle.js",
+    "start": "serve ."
   }
 }

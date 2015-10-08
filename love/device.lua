@@ -11,7 +11,44 @@ function Device:initialize(fs)
     math = math,
     string = string,
     table = table,
+    -- Coroutines not allowed
+    -- IO not allowed
+    -- OS not allowed
+    -- GC manipulation not allowed
+
+    assert = assert,
+
+    -- TODO: Wrap dofile
+
+    error = error,
+    getfenv = getfenv,
+    getmetatable = getmetatable,
     ipairs = ipairs,
+
+    load = load,
+    -- TODO: Wrap loadfile
+    loadstring = loadstring,
+    next = next,
+
+    pairs = pairs,
+    pcall = pcall,
+
+    print = print,
+
+    rawequal = rawequal,
+    rawget = rawget,
+    rawset = rawset,
+
+    select = select,
+    setfenv = setfenv,
+    setmetatable = setmetatable,
+    tonumber = tonumber,
+    tostring = tostring,
+    type = type,
+    unpack = unpack,
+    xpcall = xpcall,
+
+    -- Figure out require
   }
 
   self.env.retroboy = {}

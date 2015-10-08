@@ -4,7 +4,8 @@ RetroBoy is a platform for creating and distributing games, inspired by the aest
 
 ## Platforms
 RetroBoy is designed to be as easy as possible to port between platforms. Current planned platforms are:
-- [Windows / OSX / Linux](./desktop)
+- [Windows / OSX / Linux (Love2D)](./love)
+- [C++ Native](./native)
 - [Web](./web)
 - [Android](./android)
 - iOS - Not Started

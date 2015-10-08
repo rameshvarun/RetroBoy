@@ -1,19 +1,60 @@
 #include "device.hpp"
 
-namespace retroboy {\
-int display_clear(lua_State *L) {
+namespace retroboy {
+int wrapped_DisplayClear(lua_State *L) {
   Device *device = (Device *)lua_touserdata(L, lua_upvalueindex(1));
   int color = luaL_checkinteger(L, 1);
   device->ClearDisplay(color);
   return 0;
 }
-int display_setPixel(lua_State *L) {
+int wrapped_DisplaySetPixel(lua_State *L) {
   Device *device = (Device *)lua_touserdata(L, lua_upvalueindex(1));
   int x = luaL_checkinteger(L, 1);
   int y = luaL_checkinteger(L, 2);
   int color = luaL_checkinteger(L, 3);
   device->SetPixel(x, y, color);
   return 0;
+}
+int GetLeft(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_LEFT]);
+  return 1;
+}
+int GetRight(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_RIGHT]);
+  return 1;
+}
+int GetUp(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_UP]);
+  return 1;
+}
+int GetDown(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_DOWN]);
+  return 1;
+}
+
+int GetStart(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_RETURN]);
+  return 1;
+}
+int GetSelect(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_SPACE]);
+  return 1;
+}
+int GetA(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_Z]);
+  return 1;
+}
+int GetB(lua_State *L) {
+  auto keystate = SDL_GetKeyboardState(NULL);
+  lua_pushboolean(L, keystate[SDL_SCANCODE_X]);
+  return 1;
 }
 
 void Device::InstallDisplayAPI() {
@@ -25,17 +66,53 @@ void Device::InstallDisplayAPI() {
 
     {
       lua_pushlightuserdata(vm_.get(), this);
-      lua_pushcclosure(vm_.get(), display_clear, 1);
+      lua_pushcclosure(vm_.get(), wrapped_DisplayClear, 1);
       lua_setfield(vm_.get(), -2, "clear");
     }
 
     {
       lua_pushlightuserdata(vm_.get(), this);
-      lua_pushcclosure(vm_.get(), display_setPixel, 1);
+      lua_pushcclosure(vm_.get(), wrapped_DisplaySetPixel, 1);
       lua_setfield(vm_.get(), -2, "setPixel");
     }
 
     lua_setfield(vm_.get(), -2, "display");
+  }
+  lua_pop(vm_.get(), 1);
+}
+
+void Device::InstallInputAPI() {
+  lua_getfield(vm_.get(), LUA_GLOBALSINDEX, "retroboy");
+
+  // Create input table.
+  {
+    lua_createtable(vm_.get(), 0, 8);
+
+    lua_pushcfunction(vm_.get(), GetLeft);
+    lua_setfield(vm_.get(), -2, "left");
+
+    lua_pushcfunction(vm_.get(), GetRight);
+    lua_setfield(vm_.get(), -2, "right");
+
+    lua_pushcfunction(vm_.get(), GetUp);
+    lua_setfield(vm_.get(), -2, "up");
+
+    lua_pushcfunction(vm_.get(), GetDown);
+    lua_setfield(vm_.get(), -2, "down");
+
+    lua_pushcfunction(vm_.get(), GetStart);
+    lua_setfield(vm_.get(), -2, "start");
+
+    lua_pushcfunction(vm_.get(), GetSelect);
+    lua_setfield(vm_.get(), -2, "select");
+
+    lua_pushcfunction(vm_.get(), GetA);
+    lua_setfield(vm_.get(), -2, "a");
+
+    lua_pushcfunction(vm_.get(), GetB);
+    lua_setfield(vm_.get(), -2, "b");
+
+    lua_setfield(vm_.get(), -2, "input");
   }
   lua_pop(vm_.get(), 1);
 }
@@ -52,6 +129,7 @@ Device::Device() {
   lua_setglobal(vm_.get(), "retroboy");
 
   InstallDisplayAPI();
+  InstallInputAPI();
 
   // Run main.lua file
   if (PHYSFS_exists("main.lua")) {

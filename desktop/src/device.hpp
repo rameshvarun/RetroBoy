@@ -11,8 +11,17 @@
 namespace retroboy {
   // These wrapper functions convert the arguments, as well as extract the
   // current Device* pointer from the closure.
-  int display_clear(lua_State* L);
-  int display_setPixel(lua_State* L);
+  int wrapped_DisplayClear(lua_State* L);
+  int wrapped_DisplaySetPixel(lua_State* L);
+
+  int GetLeft(lua_State *L);
+  int GetRight(lua_State *L);
+  int GetUp(lua_State *L);
+  int GetDown(lua_State *L);
+  int GetA(lua_State *L);
+  int GetB(lua_State *L);
+  int GetStart(lua_State *L);
+  int GetSelect(lua_State *L);
 
   class Device {
   private:
@@ -23,6 +32,7 @@ namespace retroboy {
     std::unique_ptr<lua_State, void(*)(lua_State*)> vm_ {luaL_newstate(), lua_close};
 
     void InstallDisplayAPI();
+    void InstallInputAPI();
 
   public:
     Device();

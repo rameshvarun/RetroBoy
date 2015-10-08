@@ -1,3 +1,3 @@
 # RetroBoy Android Player
 
-To be implemented using LuaJ.
+Implemented using LuaJ. Place `rom.retroboy` into the `app/src/main/assets` directory.

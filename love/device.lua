@@ -33,6 +33,12 @@ function Device:initialize(fs)
   }
 
   self.env.retroboy.filesystem = {
+    exists = function(name)
+      return fs:exists(name)
+    end,
+    read = function(name)
+      return fs:read(name)
+    end
   }
 
   self.env.retroboy.input = {

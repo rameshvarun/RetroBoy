@@ -5,7 +5,7 @@ LFLAGS=$(shell pkg-config --libs luajit sdl2 jsoncpp) -L/usr/local/Cellar/physfs
 .PHONY: default clean
 default: retroboy
 
-OBJS=src/main.o
+OBJS=src/main.o src/device.o
 
 retroboy: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS)
@@ -19,4 +19,5 @@ clean:
 	rm retroboy
 
 format:
-	clang-format -i src/*.cpp
+	find src -name "*.cpp" -exec clang-format -i {} \;
+	find src -name "*.hpp" -exec clang-format -i {} \;

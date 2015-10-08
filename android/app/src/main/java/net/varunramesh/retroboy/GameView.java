@@ -1,11 +1,15 @@
 package net.varunramesh.retroboy;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -65,6 +69,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         private Device device;
         private long lastTime = System.currentTimeMillis();
 
+
+        private Bitmap dpad;
+        private final DisplayMetrics displayMetrics;
+
         public void setRunning(boolean running) {
             this.running = running;
         }
@@ -75,6 +83,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         public GameThread(SurfaceHolder holder, Context context) {
             surfaceHolder = holder;
+
+            displayMetrics = context.getResources().getDisplayMetrics();
+            try {
+                dpad = BitmapFactory.decodeStream(context.getAssets().open("dpad_light.png"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -87,6 +102,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                         // Draw if a device is available.
                         if (c != null) {
                             float aspect = 160.0f/144.0f;
+
+                            boolean landscape = c.getWidth() > c.getHeight();
 
                             float scale = 1.0f;
                             if (c.getHeight() * aspect > c.getWidth()) {
@@ -106,8 +123,24 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                                 lastTime = System.currentTimeMillis();
 
                                 c.save();
+
+                                // Center screen in landscape mode.
+                                if (landscape)
+                                    c.translate(c.getWidth() / 2.0f - 80*scale, 0);
+
                                 c.scale(scale, scale);
+
                                 c.drawBitmap(device.getDisplay(), 0, 0, null);
+                                c.restore();
+
+                                c.save();
+                                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, displayMetrics);
+                                float dpadScale = (px / dpad.getWidth());
+
+                                c.translate(40.0f, c.getHeight() * 0.75f - (dpad.getHeight()/2)*dpadScale);
+                                c.scale(dpadScale, dpadScale);
+
+                                c.drawBitmap(dpad, 0, 0, null);
                                 c.restore();
                             }
                         }

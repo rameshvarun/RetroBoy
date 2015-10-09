@@ -74,12 +74,11 @@ function Device:initialize(fs, input)
 
   -- Filesystem API
   self.env.retroboy.filesystem = {
-    exists = function(name)
-      return fs:exists(name)
-    end,
-    read = function(name)
-      return fs:read(name)
-    end
+    exists = function(path) return fs:exists(path) end,
+    read = function(path) return fs:read(path) end,
+    enumerate = function(path) return fs:enumerate(path) end,
+    isFile = function(path) return fs:isFile(path) end,
+    isDir = function(path) return fs:isDir(path) end
   }
 
   -- Input API

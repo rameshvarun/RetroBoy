@@ -1,12 +1,13 @@
 local Device = class('Device')
 
-function Device:initialize(fs)
+function Device:initialize(fs, input)
   self.palette = {{15, 56, 15}, {48, 98, 48}, {139, 172, 15}, {155, 188, 15}}
 
   self.display = love.graphics.newCanvas(160, 144, 'normal', 0)
   self.display:setFilter( "nearest", "nearest", 0 )
 
   self.fs = fs
+  self.input = input
   self.env = {
     math = math,
     string = string,
@@ -51,8 +52,10 @@ function Device:initialize(fs)
     -- Figure out require
   }
 
+  -- Global retroboy table
   self.env.retroboy = {}
 
+  -- Display API
   self.env.retroboy.display = {
     clear = function(color)
       self.display:clear(self.palette[color + 1])
@@ -69,6 +72,7 @@ function Device:initialize(fs)
     end
   }
 
+  -- Filesystem API
   self.env.retroboy.filesystem = {
     exists = function(name)
       return fs:exists(name)
@@ -78,7 +82,18 @@ function Device:initialize(fs)
     end
   }
 
+  -- Input API
   self.env.retroboy.input = {
+    left = function() return self.input:isDown("left") end,
+    right = function() return self.input:isDown("right") end,
+    up = function() return self.input:isDown("up") end,
+    down = function() return self.input:isDown("down") end,
+
+    a = function() return self.input:isDown("a") end,
+    b = function() return self.input:isDown("b") end,
+
+    start = function() return self.input:isDown("start") end,
+    select = function() return self.input:isDown("select") end
   }
 
   if not self.fs:exists('conf.json') then error('No conf.json') end
@@ -98,10 +113,12 @@ function Device:getDisplay()
   return self.display
 end
 
+-- Start the device draw cycle.
 function Device:draw()
   self.env.retroboy.draw()
 end
 
+-- Start the device update cycle.
 function Device:update(dt)
   self.env.retroboy.update(dt)
 end

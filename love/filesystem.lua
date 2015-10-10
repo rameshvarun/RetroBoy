@@ -1,5 +1,4 @@
 local FileSystem = class("FileSystem")
-local prettyprint = require "prettyprint"
 
 function FileSystem:initialize(path)
   self.prefix = path .. '/'

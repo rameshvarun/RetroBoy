@@ -1,4 +1,4 @@
 {
-	"title": "Hello World",
-	"palette": ["0x0f380f", "0x306230", "0x8bac0f", "0x9bbc0f"]
+	"name": "Hello World",
+	"palette": ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"]
 }

@@ -1,4 +1,5 @@
 local Device = class('Device')
+local json = require "vendor.dkjson"
 
 function Device:initialize(fs, input)
   self.palette = {{15, 56, 15}, {48, 98, 48}, {139, 172, 15}, {155, 188, 15}}
@@ -97,6 +98,10 @@ function Device:initialize(fs, input)
 
   if not self.fs:exists('conf.json') then error('No conf.json') end
   if not self.fs:exists('main.lua') then error('No main.lua') end
+
+  -- Load in configs
+  self.config = json.decode(self.fs:read('conf.json'))
+  self.palette = _.map(self.config.palette, util.hex2rgb)
 
   local chunk = loadstring(self.fs:read('main.lua'), 'main.lua')
   setfenv(chunk, self.env)

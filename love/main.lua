@@ -1,4 +1,6 @@
-class = require "middleclass"
+class = require "vendor.middleclass"
+_ = require "vendor.underscore"
+util = require "util"
 
 local Device = require "device"
 local FileSystem = require "filesystem"

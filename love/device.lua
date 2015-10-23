@@ -24,13 +24,13 @@ function Device:initialize(fs, input)
     -- TODO: Wrap dofile
 
     error = error,
-    getfenv = getfenv,
+    getfenv = getfenv, -- NOTE: Can be used to break out of the sandbox.
     getmetatable = getmetatable,
     ipairs = ipairs,
 
-    load = load,
+    -- TODO: Wrap load
     -- TODO: Wrap loadfile
-    loadstring = loadstring,
+    -- TODO: Wrap loadstring
     next = next,
 
     pairs = pairs,
@@ -51,13 +51,69 @@ function Device:initialize(fs, input)
     unpack = unpack,
     xpcall = xpcall,
 
-    -- Figure out require
+    -- Implemented based off of the description in http://www.lua.org/manual/5.2/manual.html#6.3
+    require = function (modname)
+	-- If the module has already been loaded, simply return it.
+    	if self.env.package.loaded[modname] ~= nil then
+		return self.env.package.loaded[modname]
+	end
+
+	-- Try all of the searchers, looking for one that returns a loader.
+	for _, searcher in ipairs(self.env.package.searchers) do
+		-- Try this searcher, which can return a loader function, along
+		-- with some extra data.
+		local loader, data = searcher(modname)
+		if type(loader) == "function" then
+			local module = loader(modname, data)
+			self.env.package.loaded[modname] = module
+			return module
+		end
+	end
+
+	error("Could not find a loader for module " .. modname)
+    end,
+
+    package = {
+	    config = "/\n;\n?\n!\n-\b",
+	    path = "/?.lua",
+	    loaded = {}, -- Loaders for modules are cached here.
+	    preload = {},
+	    searchers = {
+		-- Preload searcher.
+	    	function (modname)
+			return self.env.package.preload[modname]
+		end,
+		-- Temporary searcher that starts from FS root.
+		-- TODO: Search in the path, thus allowing code that modifies the search path.
+		function (modname)
+			modname = modname:gsub("%.", "/")
+			if modname:sub(-4) ~= ".lua" then
+				modname = modname .. ".lua"
+			end
+			
+			if self.fs:exists(modname) then
+				local loader = function(modname, filename)
+					local chunk = loadstring(self.fs:read(filename), filename)
+ 					setfenv(chunk, self.env)
+					return chunk()
+				end
+				return loader, modname
+			end
+		end
+	    },
+	    searchpath = function(name, path, sep, rep)
+		    error("package.searchpath not yet implemented.")
+	    end
+    }
   }
 
-  -- Global retroboy table
+  -- Make sure that _G within the scope refers to the sandboxed scope.
+  self.env["_G"] = self.env
+
+  -- Global retroboy table.
   self.env.retroboy = {}
 
-  -- Display API
+  -- Display API.
   self.env.retroboy.display = {
     clear = function(color)
       self.display:clear(self.palette[color + 1])
@@ -74,7 +130,7 @@ function Device:initialize(fs, input)
     end
   }
 
-  -- Filesystem API
+  -- Filesystem API.
   self.env.retroboy.filesystem = {
     exists = function(path) return fs:exists(path) end,
     read = function(path) return fs:read(path) end,
@@ -83,7 +139,7 @@ function Device:initialize(fs, input)
     isDir = function(path) return fs:isDir(path) end
   }
 
-  -- Input API
+  -- Input API.
   self.env.retroboy.input = {
     left = function() return self.input:isDown("left") end,
     right = function() return self.input:isDown("right") end,
@@ -101,13 +157,19 @@ function Device:initialize(fs, input)
   if not self.fs:exists('conf.json') then error('No conf.json') end
   if not self.fs:exists('main.lua') then error('No main.lua') end
 
-  -- Load in configs
+  -- Load in configs.
   self.config = json.decode(self.fs:read('conf.json'))
   self.palette = _.map(self.config.palette, util.hex2rgb)
 
-  local chunk = loadstring(self.fs:read('main.lua'), 'main.lua')
+  -- Try to load the main.lua chunk.
+  local chunk, err = loadstring(self.fs:read('main.lua'), 'main.lua')
+  if not chunk then
+    error("Error reading main.lua: " .. err)
+  end
   setfenv(chunk, self.env)
 
+  -- Try to run the main.lua chunk. This should populate the necessary
+  -- callbacks.
   local status, err = pcall(chunk)
   if not status then
     error(err)
@@ -120,12 +182,20 @@ end
 
 -- Start the device draw cycle.
 function Device:draw()
-  self.env.retroboy.draw()
+  if self.env.retroboy.draw ~= nil then
+    self.env.retroboy.draw()
+  else
+    error("No draw callback defined.")
+  end
 end
 
 -- Start the device update cycle.
 function Device:update(dt)
-  self.env.retroboy.update(dt)
+  if self.env.retroboy.update ~= nil then
+    self.env.retroboy.update(dt)
+  else
+    error("No draw callback defined.")
+  end
 end
 
 return Device

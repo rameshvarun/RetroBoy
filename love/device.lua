@@ -2,6 +2,7 @@ local Device = class('Device')
 local json = require "vendor.dkjson"
 
 function Device:initialize(fs, input)
+  -- Default color palette.
   self.palette = {{15, 56, 15}, {48, 98, 48}, {139, 172, 15}, {155, 188, 15}}
 
   self.display = love.graphics.newCanvas(160, 144, 'normal', 0)
@@ -96,6 +97,7 @@ function Device:initialize(fs, input)
     select = function() return self.input:isDown("select") end
   }
 
+  -- Ensure that there is both a conf.json and main.lua.
   if not self.fs:exists('conf.json') then error('No conf.json') end
   if not self.fs:exists('main.lua') then error('No main.lua') end
 
@@ -110,7 +112,6 @@ function Device:initialize(fs, input)
   if not status then
     error(err)
   end
-
 end
 
 function Device:getDisplay()

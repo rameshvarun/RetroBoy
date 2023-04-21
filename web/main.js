@@ -14,10 +14,12 @@ window.retroboy = {
       });
     });
 
-    var palette = ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"];
+    const DEFAULT_PALETTE = ["#0f380f", "#306230", "#8bac0f", "#9bbc0f"];
 
     fs.then(function(files) {
       console.log("Mounted ROM.");
+      const config = JSON.parse(files.file("conf.json").asText());
+      const palette = config.palette || DEFAULT_PALETTE;
 
       var ctx = canvas.getContext('2d');
       var PIXEL_WIDTH = canvas.width / 160;
@@ -42,19 +44,44 @@ window.retroboy = {
         return 0;
       }
 
+      L.execute(`table.insert(package.searchers, function(name)
+        local dirsep = "/"
+        local file_path = name:gsub("%.", dirsep) .. ".lua"
+        local code = retroboy.filesystem.read(file_path)
+        res, err = loadstring(code, file_path)
+        return res
+      end)`);
+
       // Create retroboy table.
-      L.createtable(0, 1);{
-      // Create display table.
-      L.createtable(0, 2);
+      L.createtable(0, 1);
+      
+      {
+        // Create display table.
+        L.createtable(0, 2);
 
-      L.pushjs(clear);
-      L.setfield(-2, "clear");
+        L.pushjs(clear);
+        L.setfield(-2, "clear");
 
-      L.pushjs(setPixel);
-      L.setfield(-2, "setPixel");
+        L.pushjs(setPixel);
+        L.setfield(-2, "setPixel");
 
-      L.setfield(-2, "display");
+        L.setfield(-2, "display");
       }
+
+      {
+        // Create filesystem table.
+        L.createtable(0, 2);
+
+        L.pushjs(() => {
+          const file = L.tostring(2);
+          const result = files.file(file).asText();
+          return result;
+        });
+        L.setfield(-2, "read");
+
+        L.setfield(-2, "filesystem");
+      }
+
       L.setglobal("retroboy");
 
       var code = files.file("main.lua").asText();

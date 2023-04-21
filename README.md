@@ -1,5 +1,9 @@
 # RetroBoy
 
+<p align="center">
+<img src="./examples/helloworld/demo.png"/>
+</p>
+
 RetroBoy is a platform for creating and distributing games, inspired by the aesthetic of the original GameBoy. Games are written in Lua and packaged into "rom" files, which can be run in one of many players.
 
 ## Platforms
